@@ -1,38 +1,39 @@
 #include "shell.h"
 
 /**
- * get_rec_file - gets the record file
+ * get_history_file_ - gets the history file
  * @info: parameter struct
  *
- * Return: allocated string containing the record file
+ * Return: allocated string containg history file
  */
-char *get_rec_file(info_t *info)
+
+char *get_history_file_(info_t *info)
 {
 	char *buf, *dir;
 
 	dir = _getenv(info, "HOME=");
 	if (!dir)
 		return (NULL);
-	buf = malloc(sizeof(char) * (_strlen(dir) + _strlen(RECORD_FILE) + 2));
+	buf = malloc(sizeof(char) * (_strlen(dir) + _strlen(HIST_FILE) + 2));
 	if (!buf)
 		return (NULL);
 	buf[0] = 0;
 	_strcpy(buf, dir);
 	_strcat(buf, "/");
-	_strcat(buf, RECORD_FILE);
+	_strcat(buf, HIST_FILE);
 	return (buf);
 }
 
 /**
- * write_rec - writes to the record file
+ * write_history_ - creates a file, or appends to an existing file
  * @info: the parameter struct
  *
  * Return: 1 on success, else -1
  */
-int write_rec(info_t *info)
+int write_history_(info_t *info)
 {
 	ssize_t fd;
-	char *filename = get_rec_file(info);
+	char *filename = get_history_file(info);
 	list_t *node = NULL;
 
 	if (!filename)
@@ -53,17 +54,17 @@ int write_rec(info_t *info)
 }
 
 /**
- * read_rec - reads the record file
+ * read_history_ - reads history from file
  * @info: the parameter struct
  *
  * Return: histcount on success, 0 otherwise
  */
-int read_rec(info_t *info)
+int read_history_(info_t *info)
 {
 	int i, last = 0, linecount = 0;
 	ssize_t fd, rdlen, fsize = 0;
 	struct stat st;
-	char *buf = NULL, *filename = get_rec_file(info);
+	char *buf = NULL, *filename = get_history_file(info);
 
 	if (!filename)
 		return (0);
@@ -88,28 +89,28 @@ int read_rec(info_t *info)
 		if (buf[i] == '\n')
 		{
 			buf[i] = 0;
-			build_rec_list(info, buf + last, linecount++);
+			build_history_list(info, buf + last, linecount++);
 			last = i + 1;
 		}
 	if (last != i)
-		build_record_list(info, buf + last, linecount++);
+		build_history_list(info, buf + last, linecount++);
 	free(buf);
 	info->histcount = linecount;
-	while (info->histcount-- >= RECORD_MAX)
+	while (info->histcount-- >= HIST_MAX)
 		delete_node_at_index(&(info->history), 0);
-	renumber_record(info);
+	renumber_history(info);
 	return (info->histcount);
 }
 
 /**
- * build_rec_list - adds entry to a record linked list
- * @info: Structure containing potential arguments
+ * build_history_list_ - adds entry to a history linked list
+ * @info: Structure containing potential arguments. Used to maintain
  * @buf: buffer
- * @linecount: the record linecount, histcount
+ * @linecount: the history linecount, histcount
  *
  * Return: Always 0
  */
-int build_rec_list(info_t *info, char *buf, int linecount)
+int build_history_list_(info_t *info, char *buf, int linecount)
 {
 	list_t *node = NULL;
 
@@ -123,12 +124,12 @@ int build_rec_list(info_t *info, char *buf, int linecount)
 }
 
 /**
- * renumber_rec - renumbers the record linked list after changes
- * @info: Structure containing potential arguments
+ * renumber_history_ - renumbers the history linked in list after changes
+ * @info: Structure containing potential arguments. Used to maintain
  *
  * Return: the new histcount
  */
-int renumber_rec(info_t *info)
+int renumber_history_(info_t *info)
 {
 	list_t *node = info->history;
 	int i = 0;
@@ -140,4 +141,3 @@ int renumber_rec(info_t *info)
 	}
 	return (info->histcount = i);
 }
-

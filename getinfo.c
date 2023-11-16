@@ -1,73 +1,73 @@
 #include "shell.h"
 
 /**
- * initialize_infor - initializes info_t structure
- * @details: structure address
+ * clear_info_ - initializes info_t struct
+ * @info: struct address
  */
-void initialize_infor(info_t *details)
+void clear_info_(info_t *info)
 {
-	details->arg = NULL;
-	details->arguments = NULL;
-	details->location = NULL;
-	details->argument_count = 0;
+	info->arg = NULL;
+	info->argv = NULL;
+	info->path = NULL;
+	info->argc = 0;
 }
 
 /**
- * configure_infor - initializes info_t structure
- * @details: structure address
- * @vector: argument vector
+ * set_info_ - initializes info_t struct
+ * @info: struct address
+ * @av: argument vector
  */
-void configure_infor(info_t *details, char **vector)
+void set_info_(info_t *info, char **av)
 {
-	int index = 0;
+	int i = 0;
 
-	details->name = vector[0];
-	if (details->arg)
+	info->fname = av[0];
+	if (info->arg)
 	{
-		details->arguments = strtow(details->arg, " \t");
-		if (!details->arguments)
+		info->argv = strtow(info->arg, " \t");
+		if (!info->argv)
 		{
-			details->arguments = malloc(sizeof(char *) * 2);
-			if (details->arguments)
+			info->argv = malloc(sizeof(char *) * 2);
+			if (info->argv)
 			{
-				details->arguments[0] = _strdup(details->arg);
-				details->arguments[1] = NULL;
+				info->argv[0] = _strdup(info->arg);
+				info->argv[1] = NULL;
 			}
 		}
-		for (index = 0; details->arguments && details->arguments[index]; index++)
+		for (i = 0; info->argv && info->argv[i]; i++)
 			;
-		details->argument_count = index;
+		info->argc = i;
 
-		replace_data(details);
-		replace_variables(details);
+		replace_alias(info);
+		replace_vars(info);
 	}
 }
 
 /**
- * erase_infor - frees info_t structure fields
- * @details: structure address
- * @release: true if freeing all fields
+ * free_info_ - frees info_t struct fields
+ * @info: struct address
+ * @all: true if freeing all fields
  */
-void erase_infor(info_t *details, int release)
+void free_info_(info_t *info, int all)
 {
-	ffree(details->arguments);
-	details->arguments = NULL;
-	details->location = NULL;
-	if (release)
+	ffree(info->argv);
+	info->argv = NULL;
+	info->path = NULL;
+	if (all)
 	{
-		if (!details->cmd_buf)
-			free(details->arg);
-		if (details->env)
-			free_list(&(details->env));
-		if (details->history)
-			free_list(&(details->history));
-		if (details->alias)
-			free_list(&(details->alias));
-		ffree(details->environ);
-		details->environ = NULL;
-		bfree((void **)details->cmd_buf);
-		if (details->readfd > 2)
-			close(details->readfd);
+		if (!info->cmd_buf)
+			free(info->arg);
+		if (info->env)
+			free_list(&(info->env));
+		if (info->history)
+			free_list(&(info->history));
+		if (info->alias)
+			free_list(&(info->alias));
+		ffree(info->environ);
+			info->environ = NULL;
+		bfree((void **)info->cmd_buf);
+		if (info->readfd > 2)
+			close(info->readfd);
 		_putchar(BUF_FLUSH);
 	}
 }

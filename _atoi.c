@@ -1,77 +1,74 @@
 #include "shell.h"
 
 /**
- * interactive_mode - returns true if the shell is in interactive mode
- * @info_shell: struct address
+ * inter - returns true if shell is interactive mode
+ * @info: struct address
  *
  * Return: 1 if interactive mode, 0 otherwise
  */
-int interactive_mode(info_t *info_shell)
+int inter(info_t *info)
 {
-	return (isatty(STDIN_FILENO) && info_shell->readfd <= 2);
+	return (isatty(STDIN_FILENO) && info->readfd <= 2);
 }
 
 /**
- * is_delimiters - checks if a character is a delimiters
- * @ch: the character to check
- * @delimiters: the delimiters string
- *
+ * is_deli - checks if character is a delimeter
+ * @c: the char to check
+ * @delim: the delimeter string
  * Return: 1 if true, 0 if false
  */
-int is_delimiters(char ch, char *delimiters)
+int is_deli(char c, char *delim)
 {
-	while (*delimiters)
-	if (*delimiters++ == ch)
-	return (1);
+	while (*delim)
+		if (*delim++ == c)
+			return (1);
 	return (0);
 }
 
 /**
- * is_alphabetic - checks for an alphabetic character
- * @ch: The character to be checked
- *
- * Return: 1 if 'ch' is alphabetic, 0 otherwise
+ * _isalpha_ - checks for alphabetic character
+ * @c: The character to input
+ * Return: 1 if c is alphabetic, 0 otherwise
  */
-int is_alphabetic(int ch)
+
+int _isalpha_(int c)
 {
-	if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
-	return (1);
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (1);
 	else
-	return (0);
+		return (0);
 }
 
 /**
- * string_to_int - converts a string to an integer
- * @str: the string to be converted
- *
- * Return: 0 if there are no numbers in the string,
- * the converted number otherwise
+ * _atoi_ - converts a string to an integer
+ * @s: the string to be converted
+ * Return: 0 if no numbers in string, converted number otherwise
  */
-int string_to_int(char *str)
+
+int _atoi_(char *s)
 {
-	int current_index, multiplier_sign = 1, flag_state = 0, output;
-	unsigned int res = 0;
+	int i, sign = 1, flag = 0, output;
+	unsigned int result = 0;
 
-	for (current_index = 0; str[current_index]
-	!= '\0' && flag_state != 2; current_index++)
+	for (i = 0; s[i] != '\0' && flag != 2; i++)
 	{
-	if (str[current_index] == '-')
-	multiplier_sign *= -1;
+		if (s[i] == '-')
+			sign *= -1;
 
-	if (str[current_index] >= '0' && str[current_index] <= '9')
-	{
-	flag_state = 1;
-	res *= 10;
-	res += (str[current_index] - '0');
-	}
-	else if (flag_state == 1)
-	flag_state = 2;
+		if (s[i] >= '0' && s[i] <= '9')
+		{
+			flag = 1;
+			result *= 10;
+			result += (s[i] - '0');
+		}
+		else if (flag == 1)
+			flag = 2;
 	}
 
-	if (multiplier_sign == -1)
-	output = -res;
+	if (sign == -1)
+		output = -result;
 	else
-	output = res;
+		output = result;
 
 	return (output);
 }
